@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient<ExternalApiService>();
+builder.Services.AddHttpClient<ExternalApiService>(c => c.Timeout = TimeSpan.FromSeconds(12));
 builder.Services.AddScoped<CountryService>();
 
 

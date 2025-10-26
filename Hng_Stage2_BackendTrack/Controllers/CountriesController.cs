@@ -1,4 +1,5 @@
-﻿using Hng_Stage2_BackendTrack.Services;
+﻿using Hng_Stage2_BackendTrack.Exceptions;
+using Hng_Stage2_BackendTrack.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hng_Stage2_BackendTrack.Controllers
@@ -22,9 +23,23 @@ namespace Hng_Stage2_BackendTrack.Controllers
                 await _countryService.RefreshCountriesAsync();
                 return Ok(new { message = "Countries refreshed successfully" });
             }
-            catch (Exception ex)
+            catch (ExternalApiException ex)
             {
-                return StatusCode(503, new { error = "External data source unavailable", details = ex.Message });
+                var apiName = ex.ApiName switch
+                {
+                    "restcountries" => "RESTCountries API",
+                    "exchange_rates" => "Exchange Rate API",
+                    _ => ex.ApiName
+                };
+                return StatusCode(503, new
+                {
+                    error = "External data source unavailable",
+                    details = $"Could not fetch data from {apiName}"
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred while refreshing countries" });
             }
         }
 
