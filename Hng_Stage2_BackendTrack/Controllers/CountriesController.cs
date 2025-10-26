@@ -37,9 +37,15 @@ namespace Hng_Stage2_BackendTrack.Controllers
                     details = $"Could not fetch data from {apiName}"
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { error = "An unexpected error occurred while refreshing countries" });
+                // 👇 Add this line for debugging only
+                return StatusCode(500, new
+                {
+                    error = "Internal server error",
+                    details = ex.Message,
+                    stack = ex.StackTrace
+                });
             }
         }
 
