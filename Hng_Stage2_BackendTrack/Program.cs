@@ -12,7 +12,16 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient<ExternalApiService>(c => c.Timeout = TimeSpan.FromSeconds(12));
+builder.Services.AddHttpClient<ExternalApiServices.ExternalApiService>()
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        return new HttpClientHandler
+        {
+            // Ignore invalid SSL certs (e.g., Railway rejecting handshake)
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+        };
+    });
+
 builder.Services.AddScoped<CountryService>();
 
 
