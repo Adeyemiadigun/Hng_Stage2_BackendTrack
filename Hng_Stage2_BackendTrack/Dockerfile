@@ -22,4 +22,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Hng_Stage2_BackendTrack.dll"]
-", "Hng_Stage2_BackendTrack.dll"]
