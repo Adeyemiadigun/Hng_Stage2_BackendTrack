@@ -12,8 +12,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Hng_Stage2_BackendTrack/Hng_Stage2_BackendTrack.csproj", "Hng_Stage2_BackendTrack/"]
-RUN dotnet restore "./Hng_Stage2_BackendTrack/Hng_Stage2_BackendTrack.csproj"
+COPY ["Hng_Stage2_BackendTrack.csproj", "."]
+RUN dotnet restore "./Hng_Stage2_BackendTrack.csproj"
 COPY . .
 WORKDIR "/src/Hng_Stage2_BackendTrack"
 RUN dotnet build "./Hng_Stage2_BackendTrack.csproj" -c $BUILD_CONFIGURATION -o /app/build
