@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Hng_Stage2_BackendTrack.Dto;
 using static Hng_Stage2_BackendTrack.Services.ExternalApiServices;
+using Hng_Stage2_BackendTrack.Exceptions;
 
 namespace Hng_Stage2_BackendTrack.Services
 {
@@ -33,13 +34,19 @@ namespace Hng_Stage2_BackendTrack.Services
                 countriesJson = await _api.FetchCountriesAsync();
                 exchangeData = await _api.FetchExchangeRatesAsync();
             }
+            catch (ExternalApiException)
+            {
+                // Pass it up to controller to handle as 503
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new Exception($"External data source unavailable: {ex.Message}");
+                // Unexpected error not from API
+                throw new Exception("Unexpected error while fetching external data", ex);
             }
 
             if (!exchangeData.TryGetProperty("rates", out var rates))
-                throw new Exception("Exchange rate data malformed.");
+                throw new ExternalApiException("exchange_rates", "Exchange rate data malformed.");
 
             var now = DateTime.UtcNow;
             var rnd = new Random();
@@ -110,7 +117,6 @@ namespace Hng_Stage2_BackendTrack.Services
                 }
 
                 await _db.SaveChangesAsync();
-
                 await GenerateSummaryImageAsync(now);
                 await transaction.CommitAsync();
             }
@@ -120,6 +126,7 @@ namespace Hng_Stage2_BackendTrack.Services
                 throw;
             }
         }
+
 
         public async Task<List<CountryResponseDto>> GetAllAsync(string? region = null, string? currency = null, string? sort = null)
         {
