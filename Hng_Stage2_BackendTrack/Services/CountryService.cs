@@ -117,7 +117,7 @@ namespace Hng_Stage2_BackendTrack.Services
                 }
 
                 await _db.SaveChangesAsync();
-                await GenerateSummaryImageAsync(now);
+                //await GenerateSummaryImageAsync(now);
                 await transaction.CommitAsync();
             }
             catch
